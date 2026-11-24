@@ -1,144 +1,274 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { ChevronDown, Github, Linkedin, Mail, Download, Instagram } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion"
+import { ArrowRight, Download, Terminal, MapPin, GraduationCap, Code2, Sparkles, Trophy, ExternalLink } from "lucide-react"
+import Image from "next/image"
+import InteractiveCanvas from "./InteractiveCanvas"
+import HeroTerminal from "./HeroTerminal"
+import AnimatedCounter from "./AnimatedCounter"
+
+const RESUME_URL = "https://drive.google.com/file/d/1HClIeg18U1AmLGtT7Jh5yrisnpFLZ0f3/view?usp=sharing"
+const GSOC_URL = "https://summerofcode.withgoogle.com/archive/2026/projects/GS2OzCEu"
 
 export default function Hero() {
-  const [text, setText] = useState("")
-  const [showCursor, setShowCursor] = useState(true)
-  const fullText = "Full-Stack Developer & Competitive Programmer"
+  const sectionRef = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  })
 
-  useEffect(() => {
-    let index = 0
-    const timer = setInterval(() => {
-      if (index < fullText.length) {
-        setText(fullText.slice(0, index + 1))
-        index++
-      } else {
-        clearInterval(timer)
-      }
-    }, 100)
+  // Deep parallax layer transforms
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"])
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, 80])
+  const contentScale = useTransform(scrollYProgress, [0, 1], [1, 0.94])
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0.2])
 
-    const cursorTimer = setInterval(() => {
-      setShowCursor((prev) => !prev)
-    }, 500)
+  // 3D Tilt & Specular Spotlight on Profile Card
+  const cardRef = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const spotlightX = useMotionValue(150)
+  const spotlightY = useMotionValue(150)
 
-    return () => {
-      clearInterval(timer)
-      clearInterval(cursorTimer)
-    }
-  }, [])
+  const springConfig = { stiffness: 220, damping: 22, mass: 0.5 }
+  const springX = useSpring(x, springConfig)
+  const springY = useSpring(y, springConfig)
 
-  const scrollToProjects = () => {
-    const element = document.getElementById("projects")
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
+  const rotateX = useTransform(springY, [-0.5, 0.5], ["12deg", "-12deg"])
+  const rotateY = useTransform(springX, [-0.5, 0.5], ["-12deg", "12deg"])
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const mouseXPos = e.clientX - rect.left
+    const mouseYPos = e.clientY - rect.top
+    spotlightX.set(mouseXPos)
+    spotlightY.set(mouseYPos)
+    x.set(mouseXPos / rect.width - 0.5)
+    y.set(mouseYPos / rect.height - 0.5)
   }
 
-  const handleDownloadCV = () => {
-    window.open("https://drive.google.com/file/d/1e-ZqGVmnfXmJ6rzvUI3jmAwVA5hIeFyv/view?usp=drive_link", "_blank")
+  const handleMouseLeave = () => {
+    x.set(0)
+    y.set(0)
   }
 
   return (
     <section
+      ref={sectionRef}
       id="home"
-      className="min-h-screen mt-16 sm:mt-20 flex items-center justify-center relative overflow-hidden px-4"
+      className="relative min-h-[96vh] pt-28 pb-16 sm:pt-36 sm:pb-24 flex items-center justify-center overflow-hidden bg-grid-pattern [perspective:1200px]"
     >
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900/20 to-blue-900/20">
-        <div className="absolute inset-0 opacity-10">
-          <svg width="60" height="60" className="absolute inset-0 w-full h-full" style={{ backgroundRepeat: "repeat" }}>
-            <defs>
-              <pattern id="dots" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-                <circle cx="30" cy="30" r="2" fill="#9C92AC" fillOpacity="0.3" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#dots)" />
-          </svg>
-        </div>
-      </div>
+      {/* Interactive Neural Constellation Canvas with Parallax */}
+      <motion.div style={{ y: backgroundY }} className="absolute inset-0 pointer-events-none">
+        <InteractiveCanvas />
+      </motion.div>
 
-      {/* Floating Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-48 sm:w-64 h-48 sm:h-64 bg-purple-500/10 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute top-3/4 right-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-blue-500/10 rounded-full blur-3xl animate-float-delayed"></div>
-        <div className="absolute top-1/2 left-1/2 w-24 sm:w-32 h-24 sm:h-32 bg-pink-500/10 rounded-full blur-2xl animate-bounce"></div>
-      </div>
+      {/* Ambient Pulsing Glow Orbs */}
+      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 w-[600px] h-[350px] bg-blue-600/[0.12] blur-[140px] rounded-full pointer-events-none animate-pulse duration-1000" />
+      <div className="absolute top-1/3 right-1/4 w-[400px] h-[350px] bg-indigo-600/[0.08] blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-10 left-1/4 w-[350px] h-[250px] bg-emerald-500/[0.06] blur-[100px] rounded-full pointer-events-none" />
 
-      <div className="relative z-10 text-center max-w-4xl mx-auto">
-        <div className="animate-fade-in-up">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6">
-            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-              Vaibhav Aryan
-            </span>
-          </h1>
-
-          <div className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-6 sm:mb-8 min-h-[32px] sm:min-h-[36px]">
-            {text}
-            <span className={`${showCursor ? "opacity-100" : "opacity-0"} transition-opacity`}>|</span>
-          </div>
-
-          <p className="text-base sm:text-lg text-gray-400 mb-3 sm:mb-4 max-w-2xl mx-auto leading-relaxed animate-fade-in-up-delayed px-4">
-            Third-year Mining Engineering student at IIT (ISM) Dhanbad, passionate about creating innovative web
-            solutions and solving complex algorithmic challenges.
-          </p>
-
-          <p className="text-sm sm:text-md text-gray-500 mb-8 sm:mb-12 animate-fade-in-up-delayed px-4">
-            📍 Currently in Dhanbad, Jharkhand • Originally from Banda, Uttar Pradesh
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-16 px-4">
-            <button
-              onClick={scrollToProjects}
-              className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base"
-            >
-              <span className="flex items-center justify-center space-x-2">
-                <span>View My Work</span>
-                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-y-1 transition-transform" />
+      {/* Hero Content with Receding Depth on Scroll */}
+      <motion.div
+        style={{
+          y: contentY,
+          scale: contentScale,
+          opacity: contentOpacity,
+        }}
+        className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10 w-full"
+      >
+        <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center mb-16">
+          {/* Left Column: Hero Headline & Summary */}
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left"
+          >
+            {/* Live Role Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-white/[0.1] text-xs font-mono text-slate-300 mb-6 shadow-lg shadow-black/40 backdrop-blur-md">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-            </button>
+              <span className="text-slate-200">SDE Intern @ Money Forward</span>
+              <span className="text-slate-600">•</span>
+              <a
+                href={GSOC_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 flex items-center gap-1"
+              >
+                GSoC '26 @ AOSSIE
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
 
-            <button
-              onClick={handleDownloadCV}
-              className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 border-2 border-purple-500 rounded-full font-semibold transition-all duration-300 hover:bg-purple-500 hover:scale-105 text-sm sm:text-base"
-            >
-              <span className="flex items-center justify-center space-x-2">
-                <Download className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
-                <span>Download CV</span>
+            {/* Main Headline */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-5 leading-[1.12]">
+              Building <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-emerald-400 animate-gradient">high-performance</span> systems & distributed software.
+            </h1>
+
+            {/* Sub-headline */}
+            <p className="text-base sm:text-lg text-slate-300 max-w-xl mb-8 leading-relaxed">
+              Hi, I'm <strong className="text-white font-semibold">Vaibhav Aryan</strong> (aka{" "}
+              <span className="text-blue-400 font-mono font-semibold">DecodeX</span>). Software Engineer and
+              B.Tech student at <span className="text-slate-200 font-semibold">IIT (ISM) Dhanbad</span>. Passionate
+              about scalable backend infrastructure, real-time sync with CRDTs, and algorithmic problem-solving.
+            </p>
+
+            {/* Key Meta Badges */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 mb-8 text-xs font-mono text-slate-300">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] shadow-sm backdrop-blur-md">
+                <GraduationCap className="w-3.5 h-3.5 text-blue-400" />
+                IIT (ISM) Dhanbad '27
               </span>
-            </button>
-          </div>
+              <a
+                href="https://codeforces.com/profile/decodex_it_is"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:border-emerald-500/40 text-emerald-300 transition-colors shadow-sm backdrop-blur-md"
+              >
+                <Code2 className="w-3.5 h-3.5 text-emerald-400" />
+                Codeforces DecodeX (1246)
+              </a>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.08] shadow-sm backdrop-blur-md">
+                <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                India
+              </span>
+            </div>
 
-          <div className="flex justify-center space-x-4 sm:space-x-6 px-4">
-            {[
-              { icon: Github, href: "https://github.com/Vaibhaviitian", label: "GitHub" },
-              { icon: Linkedin, href: "https://www.linkedin.com/in/vaibhav-aryan-00650b287/", label: "LinkedIn" },
-              { icon: Instagram, href: "https://www.instagram.com/aryanvaibhav15/", label: "Instagram" },
-              { icon: Mail, href: "mailto:23je1055@iitism.ac.in", label: "Email" },
-            ].map((social, index) => {
-              const Icon = social.icon
-              return (
-                <a
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group p-2 sm:p-3 bg-gray-800/50 backdrop-blur-sm rounded-full border border-gray-700 hover:border-purple-500 transition-all duration-300 hover:scale-110 hover:bg-purple-500/20"
-                  aria-label={social.label}
-                >
-                  <Icon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:text-purple-400 transition-colors" />
-                </a>
-              )
-            })}
-          </div>
+            {/* Action Buttons with Magnetic Feel */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <a
+                href="#projects"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium text-sm transition-all shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>Explore Projects</span>
+                <ArrowRight className="w-4 h-4" />
+              </a>
+              <a
+                href={RESUME_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-white/[0.12] hover:border-blue-500/40 font-medium text-sm transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <Download className="w-4 h-4 text-blue-400" />
+                <span>Download Resume</span>
+              </a>
+            </div>
+
+            {/* Animated Counters Bar */}
+            <div className="grid grid-cols-3 gap-6 pt-10 mt-10 border-t border-white/[0.08] w-full max-w-lg">
+              <div>
+                <p className="text-2xl sm:text-3xl font-bold font-mono text-white">
+                  <AnimatedCounter value={750} suffix="+" />
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">Problems Solved</p>
+              </div>
+              <div>
+                <p className="text-2xl sm:text-3xl font-bold font-mono text-blue-400">
+                  <span className="font-sans font-bold">GSoC</span> '26
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">Contributor @ AOSSIE</p>
+              </div>
+              <div>
+                <p className="text-2xl sm:text-3xl font-bold font-mono text-emerald-400">
+                  <AnimatedCounter value={9} prefix="Top " />
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">Inter-IIT Tech (ISRO)</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: 3D Tilt Profile Card with Dynamic Spotlight */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            className="lg:col-span-5 flex justify-center [perspective:1000px]"
+          >
+            <motion.div
+              ref={cardRef}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
+              style={{
+                rotateX,
+                rotateY,
+                transformStyle: "preserve-3d",
+              }}
+              className="relative w-full max-w-sm rounded-2xl p-1 group cursor-pointer"
+            >
+              {/* Outer Glow Halo */}
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-blue-600/30 via-indigo-500/20 to-emerald-500/30 blur-2xl opacity-75 group-hover:opacity-100 transition-opacity duration-500" />
+
+              {/* Main Card Frame */}
+              <div className="relative rounded-2xl bg-[#0c101a] border border-white/[0.12] p-3.5 shadow-2xl overflow-hidden backdrop-blur-xl">
+                {/* Header status bar */}
+                <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.06] mb-3">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-400">decodex.engineer</span>
+                </div>
+
+                {/* Profile Image with Modern Framing */}
+                <div className="relative aspect-[4/5] rounded-xl overflow-hidden bg-slate-900 border border-white/[0.06]">
+                  <Image
+                    src="/profile.jpg"
+                    alt="Vaibhav Aryan"
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 384px"
+                    className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c101a] via-transparent to-transparent opacity-85" />
+
+                  {/* Micro overlay tag */}
+                  <div className="absolute bottom-3 left-3 right-3 p-3 rounded-lg bg-slate-950/85 backdrop-blur-md border border-white/[0.1] shadow-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-white flex items-center gap-1">
+                          Vaibhav Aryan
+                          <Sparkles className="w-3 h-3 text-amber-400" />
+                        </p>
+                        <p className="text-[10px] font-mono text-emerald-400">IIT (ISM) Dhanbad • B.Tech</p>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-bold">
+                        CGPA 7.72
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer specs inside card */}
+                <div className="mt-3 pt-2 px-1 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                  <span>Stack: Kotlin • Go • React • Yjs</span>
+                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Ready
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
 
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
-      </div>
+        {/* Embedded Interactive Terminal */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mt-6"
+        >
+          <HeroTerminal />
+        </motion.div>
+      </motion.div>
     </section>
   )
 }

@@ -1,47 +1,34 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import SmoothScroll from "./components/SmoothScroll"
 import Navigation from "./components/Navigation"
 import Hero from "./components/Hero"
 import About from "./components/About"
-import Skills from "./components/Skills"
-import Projects from "./components/Projects"
 import Experience from "./components/Experience"
+import Projects from "./components/Projects"
+import Skills from "./components/Skills"
+import Achievements from "./components/Achievements"
 import Contact from "./components/Contact"
 import Footer from "./components/Footer"
-import LoadingScreen from "./components/LoadingScreen"
-import AnimatedBackground from "./components/AnimatedBackground"
-import BackgroundGrid from "./components/BackgroundGrid"
+import CustomCursor from "./components/CustomCursor"
+import ScrollProgress from "./components/ScrollProgress"
 
 export default function Portfolio() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  if (isLoading) {
-    return <LoadingScreen />
-  }
-
   return (
-    <div className="bg-gray-900 text-white overflow-x-hidden relative">
-      <AnimatedBackground />
-      <BackgroundGrid />
-      <div className="relative z-10">
+    <SmoothScroll>
+      <main className="bg-[#06080d] text-slate-100 min-h-screen relative selection:bg-blue-500/20 selection:text-white">
+        <CustomCursor />
+        <ScrollProgress />
         <Navigation />
         <Hero />
         <About />
-        <Skills />
-        <Projects />
         <Experience />
+        <Projects />
+        <Skills />
+        <Achievements />
         <Contact />
         <Footer />
-      </div>
-    </div>
+      </main>
+    </SmoothScroll>
   )
 }

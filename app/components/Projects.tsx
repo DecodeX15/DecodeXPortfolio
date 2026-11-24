@@ -1,333 +1,257 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { ExternalLink, Github, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { useRef, useState } from "react"
+import { ExternalLink, Github, ArrowUpRight, Zap, Users, Shield, Cpu } from "lucide-react"
+import Image from "next/image"
+import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion"
+import ScrollReveal from "./ScrollReveal"
 
-export default function Projects() {
-  const [isVisible, setIsVisible] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<number | null>(null)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const sectionRef = useRef<HTMLElement>(null)
+const GITHUB_PROFILE = "https://github.com/decodex15"
 
-  const projects = [
-    {
-      id: 1,
-      title: "CodeFusion - Collaborative Code Editor",
-      description:
-        "Real-time collaborative editor with Monaco, multi-language support, secure auth (JWT, OTP, Google OAuth), and AI assistant.",
-      longDescription:
-        "Built a collaborative online code editor supporting real-time editing for multiple users via Socket.io, integrated Monaco Editor for syntax highlighting and themes, and secure authentication with JWT, OTP, and Google OAuth. Added a responsive dashboard and an AI assistant for basic code suggestions.",
-      technologies: ["React.js", "Node.js", "Express.js", "MongoDB", "Socket.io", "JWT", "Twilio", "Monaco Editor"],
-      images: ["/collaborative-code-editor-monaco-ui.jpg", "/realtime-pair-programming-editor.jpg"],
-      liveUrl: "https://code-fusion-code-collab.vercel.app/",
-      githubUrl: "#",
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "FinanceBrain AI - Financial Query Platform",
-      description:
-        "Real-time financial insights via voice/text queries with NLP, dashboards, and WebSocket-driven live updates.",
-      longDescription:
-        "Developed a platform enabling users to retrieve insights from enterprise data using voice and text queries. Integrated NLP modules for intent interpretation with ~85% accuracy, designed an intuitive dashboard, and used WebSockets for live communication and synchronization.",
-      technologies: ["React.js", "Node.js", "Express.js", "Flask", "MongoDB", "WebSockets", "NLP"],
-      images: ["/financial-dashboard-charts-and-graphs.jpg", "/nlp-voice-assistant-interface.jpg"],
-      liveUrl: "https://hackfest2025.vercel.app/",
-      githubUrl: "#",
-      featured: true,
-    },
-    {
-      id: 3,
-      title: "TravelTrack - Travel Management Platform",
-      description:
-        "Full-stack travel platform with trip planning, community features, notifications, and collaboration tools.",
-      longDescription:
-        "Community-driven travel management platform with personalized dashboards, trip management, real-time notifications, rating, chatbot, and lost & found sections.",
-      technologies: ["React.js", "Tailwind CSS", "Node.js", "Express.js", "MongoDB", "JWT"],
-      images: ["/travel-app-hero-ui.jpg"],
-      liveUrl: "https://traveltrack21.netlify.app/",
-      githubUrl: "https://github.com/Vaibhaviitian/TravelTrackFrontend",
-      featured: false,
-    },
-    {
-      id: 4,
-      title: "CollabSpace - Real-time Collaboration",
-      description:
-        "Secure team collaboration with real-time editing, version history, and cross-platform compatibility.",
-      longDescription:
-        "A modern collaboration platform featuring E2E encryption, multi-user editing, version history, and seamless sharing.",
-      technologies: ["React", "TailwindCSS", "Framer Motion", "Node.js", "Express", "MongoDB"],
-      images: ["/team-collaboration-app-dashboard.jpg"],
-      liveUrl: "https://collabspacehub.vercel.app/",
-      githubUrl: "https://github.com/Vaibhaviitian/Collabspace",
-      featured: false,
-    },
-    {
-      id: 5,
-      title: "CricketXtra Browser Extension",
-      description: "Browser extension with live scores, match schedules, and player statistics.",
-      longDescription: "Feature-rich extension for cricket enthusiasts providing real-time updates and detailed stats.",
-      technologies: ["HTML", "CSS", "JavaScript", "Chrome Extensions API"],
-      images: ["/browser-extension-popup.png"],
-      liveUrl: "#",
-      githubUrl: "https://github.com/Vaibhaviitian/CricketExtension",
-      featured: false,
-    },
-    {
-      id: 6,
-      title: "Face Recognition Security System",
-      description: "ML-powered anti-spoofing system detecting real faces vs images in real time.",
-      longDescription:
-        "Computer vision system with real-time face detection and anti-spoofing algorithms using Python and Flask.",
-      technologies: ["Python", "Machine Learning", "Computer Vision", "Flask"],
-      images: ["/face-recognition-security-ui.jpg"],
-      liveUrl: "#",
-      githubUrl: "https://github.com/Vaibhaviitian/sih",
-      featured: false,
-    },
-    {
-      id: 7,
-      title: "EasyNetlifyText - AI Content Generation",
-      description: "AI tool for generating blogs, titles, summaries, and marketing content without sign-up.",
-      longDescription: "Mobile-friendly MERN app integrating AI for fast content creation across multiple formats.",
-      technologies: ["MERN Stack", "AI APIs", "Responsive Design"],
-      images: ["/ai-content-generator-interface.png"],
-      liveUrl: "https://easytext21.netlify.app/",
-      githubUrl: "#",
-      featured: false,
-    },
-  ]
+interface Project {
+  id: string
+  title: string
+  subtitle: string
+  description: string
+  metrics: { label: string; value: string }[]
+  technologies: string[]
+  liveUrl?: string
+  githubUrl?: string
+  image: string
+}
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.2 },
-    )
+const projects: Project[] = [
+  {
+    id: "codefusion",
+    title: "CodeFusion",
+    subtitle: "CRDT-Based Real-Time Collaborative Code Editor",
+    description:
+      "A real-time collaborative development environment leveraging conflict-free replicated data types (CRDTs) and Monaco Editor to allow concurrent multi-user editing with seamless delta synchronization and live awareness protocols.",
+    metrics: [
+      { label: "Sync Latency", value: "100–150ms" },
+      { label: "Concurrency", value: "20+ Users" },
+      { label: "Consistency", value: "Conflict-Free" },
+    ],
+    technologies: ["React.js", "Node.js", "Express.js", "Yjs", "Socket.io", "Monaco Editor", "MongoDB", "JWT"],
+    liveUrl: "https://code-fusion-code-collab.vercel.app/",
+    githubUrl: "https://github.com/decodex15/CodeFusion",
+    image: "/collaborative-code-editor-monaco-ui.jpg",
+  },
+  {
+    id: "financebrain",
+    title: "FinanceBrain AI",
+    subtitle: "Voice & NLP Enterprise Financial Query System",
+    description:
+      "Real-time enterprise financial query platform enabling users to retrieve complex financial metrics and insights using natural language via voice or text queries, backed by optimized Flask/Node APIs.",
+    metrics: [
+      { label: "Query Accuracy", value: "85%+" },
+      { label: "Response Time", value: "< 1.0s" },
+      { label: "Modality", value: "Voice & Text" },
+    ],
+    technologies: ["Python", "Flask", "React.js", "Node.js", "MongoDB", "WebSockets", "NLP"],
+    liveUrl: "https://hackfest2025.vercel.app/",
+    githubUrl: "https://github.com/decodex15/FinanceBrainAI",
+    image: "/financial-dashboard-charts-and-graphs.jpg",
+  },
+  {
+    id: "parakram",
+    title: "Parakram'25 Fest Portal",
+    subtitle: "High-Traffic Event Management Platform",
+    description:
+      "Official tournament registration and live match scoring portal for the annual sports festival of IIT (ISM) Dhanbad, featuring Razorpay payment gateways and resilient backend scaling.",
+    metrics: [
+      { label: "Scale", value: "Campus-Wide" },
+      { label: "Payments", value: "Razorpay" },
+      { label: "Cloud", value: "AWS Deployed" },
+    ],
+    technologies: ["React.js", "Node.js", "MongoDB", "Razorpay", "AWS", "Tailwind CSS"],
+    liveUrl: "https://parakram25.vercel.app/",
+    githubUrl: "https://github.com/decodex15/Parakram-Website",
+    image: "/travel-app-hero-ui.jpg",
+  },
+  {
+    id: "jenkins-search",
+    title: "Jenkins Contributor Search",
+    subtitle: "Memoized Fuzzy Contributor Search Engine",
+    description:
+      "Client-side search implementation using Fuse.js with memoized indexing and ranking, merged into official Jenkins infrastructure repository alongside a modular component refactor.",
+    metrics: [
+      { label: "Status", value: "Merged" },
+      { label: "Search Index", value: "Memoized" },
+      { label: "Impact", value: "Production" },
+    ],
+    technologies: ["React.js", "Fuse.js", "JavaScript", "GitHub Infra"],
+    githubUrl: "https://github.com/jenkins-infra",
+    image: "/realtime-pair-programming-editor.jpg",
+  },
+]
 
-    if (sectionRef.current) observer.observe(sectionRef.current)
-    return () => observer.disconnect()
-  }, [])
+function ProjectCard({ project, index }: { project: Project; index: number }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [isHovered, setIsHovered] = useState(false)
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
 
-  const openModal = (projectId: number) => {
-    setSelectedProject(projectId)
-    setCurrentImageIndex(0)
-    document.body.style.overflow = "hidden"
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    mouseX.set(e.clientX - rect.left)
+    mouseY.set(e.clientY - rect.top)
   }
 
-  const closeModal = () => {
-    setSelectedProject(null)
-    setCurrentImageIndex(0)
-    document.body.style.overflow = "unset"
-  }
+  // Staggered scroll-driven elevation for each card
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "center center"],
+  })
 
-  const nextImage = () => {
-    const project = projects.find((p) => p.id === selectedProject)
-    if (project) setCurrentImageIndex((prev) => (prev + 1) % project.images.length)
-  }
+  const cardScale = useTransform(scrollYProgress, [0, 1], [0.93, 1])
+  const cardY = useTransform(scrollYProgress, [0, 1], [60 + index * 15, 0])
+  const cardRotateX = useTransform(scrollYProgress, [0, 1], [8, 0])
 
-  const prevImage = () => {
-    const project = projects.find((p) => p.id === selectedProject)
-    if (project) setCurrentImageIndex((prev) => (prev - 1 + project.images.length) % project.images.length)
-  }
-
-  const selectedProjectData = projects.find((p) => p.id === selectedProject)
+  // Specular spotlight gradient transformation
+  const spotlightBg = useTransform(
+    [mouseX, mouseY],
+    ([xPos, yPos]) =>
+      `radial-gradient(450px circle at ${xPos}px ${yPos}px, rgba(59, 130, 246, 0.18), transparent 70%)`
+  )
 
   return (
-    <section id="projects" ref={sectionRef} className="py-20 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div
-          className={`text-center mb-16 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              Featured Projects
-            </span>
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto rounded-full"></div>
-          <p className="text-gray-400 mt-6 max-w-2xl mx-auto">
-            A showcase of my development journey and practical solutions
-          </p>
+    <div ref={cardRef} className="[perspective:1000px] w-full">
+      <motion.div
+        style={{
+          scale: cardScale,
+          y: cardY,
+          rotateX: cardRotateX,
+          transformStyle: "preserve-3d",
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        whileHover={{ y: -8, scale: 1.01 }}
+        transition={{ duration: 0.3 }}
+        className="group relative rounded-2xl bg-[#0b0f19] border border-white/[0.08] hover:border-blue-500/50 transition-all duration-300 overflow-hidden flex flex-col shadow-2xl interactive-card"
+      >
+        {/* Specular Radial Spotlight */}
+        <motion.div
+          className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 z-10"
+          style={{ background: spotlightBg }}
+        />
+
+        {/* Project Image Preview with subtle overlay */}
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-900 border-b border-white/[0.06]">
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 550px"
+            className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f19] via-transparent to-transparent opacity-75" />
+
+          {/* Top action links */}
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${project.title} GitHub Source Code`}
+                className="p-2.5 rounded-lg bg-slate-950/85 backdrop-blur-md border border-white/[0.12] text-slate-300 hover:text-white hover:bg-slate-900 transition-colors shadow-md cursor-pointer"
+              >
+                <Github className="w-4 h-4" />
+              </a>
+            )}
+            {project.liveUrl && project.liveUrl !== "#" && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${project.title} Live Application`}
+                className="p-2.5 rounded-lg bg-blue-600/90 backdrop-blur-md border border-blue-400/40 text-white hover:bg-blue-500 transition-colors shadow-md shadow-blue-500/20 cursor-pointer"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
+          </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <div
-              key={project.id}
-              className={`group relative bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500/50 transition-all duration-500 hover:scale-105 ${
-                isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-              }`}
-              style={{ transitionDelay: `${index * 120}ms` }}
-              onClick={() => openModal(project.id)}
-            >
-              <div className="relative overflow-hidden">
-                <img
-                  src={project.images[0] || "/placeholder.svg"}
-                  alt={project.title}
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                {project.featured && (
-                  <div className="absolute top-4 left-4 px-3 py-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full text-xs font-semibold">
-                    Featured
-                  </div>
-                )}
-              </div>
-
-              <div className="p-6">
-                <h3 className="text-xl font-bold mb-3 text-white group-hover:text-purple-400 transition-colors">
-                  {project.title}
-                </h3>
-                <p className="text-gray-400 mb-4 line-clamp-2">{project.description}</p>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                    <span key={techIndex} className="px-3 py-1 bg-gray-700 rounded-full text-xs text-gray-300">
-                      {tech}
-                    </span>
-                  ))}
-                  {project.technologies.length > 3 && (
-                    <span className="px-3 py-1 bg-gray-700 rounded-full text-xs text-gray-300">
-                      +{project.technologies.length - 3} more
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex space-x-4">
-                  {project.liveUrl !== "#" && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-2 text-purple-400 hover:text-purple-300 transition-colors"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      <span className="text-sm">Live Demo</span>
-                    </a>
-                  )}
-                  {project.githubUrl !== "#" && (
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Github className="w-4 h-4" />
-                      <span className="text-sm">Code</span>
-                    </a>
-                  )}
-                </div>
-              </div>
+        {/* Content Body */}
+        <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between relative z-20">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                {project.title}
+              </h3>
             </div>
-          ))}
-        </div>
+            <p className="text-xs font-mono text-slate-400 mb-3">{project.subtitle}</p>
+            <p className="text-sm text-slate-300 leading-relaxed mb-6">{project.description}</p>
+          </div>
 
-        {/* Modal */}
-        {selectedProject && selectedProjectData && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="relative">
-                <button
-                  onClick={closeModal}
-                  className="absolute top-4 right-4 z-10 p-2 bg-gray-900/80 rounded-full hover:bg-gray-700 transition-colors"
+          <div>
+            {/* Performance Metrics */}
+            <div className="grid grid-cols-3 gap-2 py-3 px-4 rounded-xl bg-slate-950/70 border border-white/[0.06] mb-5">
+              {project.metrics.map((m, idx) => (
+                <div key={idx} className="text-center">
+                  <p className="text-xs font-bold font-mono text-white">{m.value}</p>
+                  <p className="text-[10px] text-slate-400 font-mono mt-0.5">{m.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Technology Badges */}
+            <div className="flex flex-wrap gap-1.5">
+              {project.technologies.map((tech, idx) => (
+                <span
+                  key={idx}
+                  className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.08] text-slate-300 group-hover:border-blue-500/30 transition-colors"
                 >
-                  <X className="w-6 h-6" />
-                </button>
-
-                {/* Image Gallery */}
-                <div className="relative">
-                  <img
-                    src={selectedProjectData.images[currentImageIndex] || "/placeholder.svg"}
-                    alt={selectedProjectData.title}
-                    className="w-full h-64 md:h-96 object-cover"
-                  />
-
-                  {selectedProjectData.images.length > 1 && (
-                    <>
-                      <button
-                        onClick={prevImage}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-gray-900/80 rounded-full hover:bg-gray-700 transition-colors"
-                      >
-                        <ChevronLeft className="w-6 h-6" />
-                      </button>
-                      <button
-                        onClick={nextImage}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-gray-900/80 rounded-full hover:bg-gray-700 transition-colors"
-                      >
-                        <ChevronRight className="w-6 h-6" />
-                      </button>
-                    </>
-                  )}
-
-                  {/* Indicators */}
-                  {selectedProjectData.images.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
-                      {selectedProjectData.images.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentImageIndex(index)}
-                          className={`w-2 h-2 rounded-full transition-colors ${
-                            index === currentImageIndex ? "bg-white" : "bg-white/50"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-4 text-white">{selectedProjectData.title}</h3>
-                  <p className="text-gray-300 mb-6 leading-relaxed">{selectedProjectData.longDescription}</p>
-
-                  <div className="mb-6">
-                    <h4 className="text-lg font-semibold mb-3 text-white">Technologies Used</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedProjectData.technologies.map((tech, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-full text-sm text-purple-300"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3">
-                    {selectedProjectData.liveUrl !== "#" && (
-                      <a
-                        href={selectedProjectData.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg hover:scale-105 transition-transform"
-                      >
-                        <ExternalLink className="w-5 h-5" />
-                        <span>Live Demo</span>
-                      </a>
-                    )}
-                    {selectedProjectData.githubUrl !== "#" && (
-                      <a
-                        href={selectedProjectData.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center space-x-2 px-6 py-3 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
-                      >
-                        <Github className="w-5 h-5" />
-                        <span>View Code</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
+                  {tech}
+                </span>
+              ))}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+export default function Projects() {
+  return (
+    <section id="projects" className="py-24 sm:py-32 px-4 sm:px-6 relative bg-[#080b12] border-t border-white/[0.04] shadow-[0_-30px_60px_rgba(0,0,0,0.8)] z-30">
+      <ScrollReveal depth="medium" direction="perspective" className="max-w-6xl mx-auto relative z-10">
+        {/* Section Header */}
+        <div className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-xs font-mono text-blue-400 mb-3">
+              <span>03 // CODE & SYSTEMS</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-2">
+              Featured Software Projects
+            </h2>
+            <p className="text-slate-400 max-w-xl text-base">
+              Production systems, real-time collaboration engines, and algorithmic tools engineered with clean architecture.
+            </p>
+          </div>
+          <a
+            href={GITHUB_PROFILE}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-xs font-mono text-slate-300 hover:text-white px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:border-blue-500/40 hover:bg-white/[0.08] transition-all w-fit shadow-sm cursor-pointer"
+          >
+            <span>View All GitHub Repositories</span>
+            <ArrowUpRight className="w-3.5 h-3.5 text-blue-400" />
+          </a>
+        </div>
+
+        {/* Bento Project Grid */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {projects.map((project, idx) => (
+            <ProjectCard key={project.id} project={project} index={idx} />
+          ))}
+        </div>
+      </ScrollReveal>
     </section>
   )
 }

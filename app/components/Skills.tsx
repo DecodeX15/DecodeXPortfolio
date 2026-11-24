@@ -1,157 +1,204 @@
 "use client"
 
-import type React from "react"
+import { Code2, Server, Database, Brain, Trophy, ExternalLink, Cpu } from "lucide-react"
+import { motion } from "framer-motion"
+import ScrollReveal from "./ScrollReveal"
 
-import { useEffect, useRef, useState } from "react"
-import { Code, Server, Database, Wrench, Brain, Trophy } from "lucide-react"
-
-type Category = {
-  title: string
-  icon: React.ElementType
-  color: string
-  items: string[]
-}
+const marqueeTech = [
+  "C++", "Kotlin", "Spring Boot", "React.js", "Next.js", "Python", "Flutter",
+  "Dart", "FastAPI", "Node.js", "Yjs (CRDT)", "Socket.io", "MongoDB",
+  "PostgreSQL", "SQLite", "Docker", "Kubernetes", "ONNX Runtime", "mTLS", "Karate"
+]
 
 export default function Skills() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) setIsVisible(true)
-      },
-      { threshold: 0.2 },
-    )
-    if (sectionRef.current) io.observe(sectionRef.current)
-    return () => io.disconnect()
-  }, [])
-
-  const categories: Category[] = [
+  const skillCategories = [
     {
       title: "Languages",
-      icon: Code,
-      color: "from-purple-500 to-pink-500",
-      items: ["C", "C++", "JavaScript", "HTML5"],
+      icon: Code2,
+      skills: ["C", "C++", "JavaScript", "TypeScript", "Python", "Kotlin", "Dart", "SQL", "HTML/CSS"],
     },
     {
-      title: "Frameworks & Libraries",
+      title: "Frameworks & Backend",
       icon: Server,
-      color: "from-blue-500 to-cyan-500",
-      items: ["React.js", "Node.js", "Express.js", "FastAPI", "ShadCN UI", "Chrome Extensions API"],
+      skills: [
+        "React.js",
+        "Next.js",
+        "Node.js",
+        "Express.js",
+        "Spring Boot",
+        "Flutter",
+        "FastAPI",
+        "Flask",
+        "Yjs (CRDT)",
+        "Socket.io",
+      ],
     },
     {
-      title: "Databases & Cloud",
+      title: "Databases & Infrastructure",
       icon: Database,
-      color: "from-green-500 to-emerald-500",
-      items: ["MongoDB", "Cloudinary (basic)"],
+      skills: [
+        "PostgreSQL",
+        "MongoDB",
+        "SQLite",
+        "Firebase",
+        "Docker",
+        "Kubernetes",
+        "Git/GitHub",
+        "SonarQube",
+        "ONNX Runtime",
+      ],
     },
     {
-      title: "Tools & Platforms",
-      icon: Wrench,
-      color: "from-orange-500 to-red-500",
-      items: ["Git", "GitHub", "VS Code", "Postman"],
-    },
-    {
-      title: "Concepts",
+      title: "Core CS Principles",
       icon: Brain,
-      color: "from-violet-500 to-indigo-500",
-      items: [
-        "DSA",
-        "OOP",
+      skills: [
+        "Data Structures & Algorithms",
+        "Object Oriented Programming (C++)",
         "Operating Systems",
-        "Computer Networks",
-        "RESTful APIs",
-        "JWT Authentication",
-        "WebSockets",
+        "Database Management Systems",
+        "RESTful API Design",
+        "mTLS & Authentication",
       ],
     },
   ]
 
-  const sportsProgramming = [
-    { platform: "Codeforces", handle: "DecodeX", rating: "max 1202", solved: "550+" },
-    { platform: "AtCoder", handle: "DecodeX", rating: "max 303", solved: "100+" },
-    { platform: "CodeChef", handle: "DecodeX", rating: "max 1431", solved: "60+" },
+  const competitiveProgramming = [
+    {
+      platform: "Codeforces",
+      handle: "DecodeX",
+      profileUrl: "https://codeforces.com/profile/decodex_it_is",
+      maxRating: "1246",
+      tier: "Pupil",
+      solved: "650+ Problems",
+      badgeColor: "border-blue-500/30 bg-blue-500/10 text-blue-400",
+    },
+    {
+      platform: "AtCoder",
+      handle: "DecodeX",
+      profileUrl: "https://atcoder.jp/users/xdecodex",
+      maxRating: "429",
+      tier: "Rated",
+      solved: "100+ Problems",
+      badgeColor: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
+    },
   ]
 
   return (
-    <section id="skills" ref={sectionRef} className="py-12 sm:py-16 md:py-20 px-4 bg-gray-800/30">
-      <div className="max-w-6xl mx-auto">
-        <div
-          className={`text-center mb-10 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}
-        >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              Technical Skills
-            </span>
+    <section id="skills" className="py-24 sm:py-32 px-4 sm:px-6 relative bg-[#06080d] border-t border-white/[0.04] shadow-[0_-30px_60px_rgba(0,0,0,0.8)] z-30">
+      <ScrollReveal depth="medium" direction="perspective" className="max-w-6xl mx-auto relative z-10">
+        {/* Infinite Tech Marquee Strip */}
+        <div className="mb-14 overflow-hidden py-3 -mx-4 sm:-mx-6 relative">
+          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#06080d] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#06080d] to-transparent z-10 pointer-events-none" />
+          <div className="flex gap-6 whitespace-nowrap animate-marquee">
+            {[...marqueeTech, ...marqueeTech].map((tech, i) => (
+              <span
+                key={i}
+                className="text-xs font-mono text-slate-500 hover:text-blue-400 transition-colors duration-200 select-none px-3 py-1 rounded-full bg-white/[0.02] border border-white/[0.04]"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Section Header */}
+        <div className="mb-14">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-xs font-mono text-blue-400 mb-3">
+            <span>04 // CAPABILITIES</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-2">
+            Technical Proficiencies & Systems Matrix
           </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-auto rounded-full" />
-          <p className="text-gray-400 mt-4 max-w-2xl mx-auto text-sm sm:text-base">
-            Aligned with your resume — clean and readable on all screens
+          <p className="text-slate-400 max-w-xl text-base">
+            Core technologies, programming languages, and tooling utilized in production environments and competitive problem solving.
           </p>
         </div>
 
-        {/* Skill Categories */}
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          {categories.map((cat, idx) => {
+        {/* Skills Category Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {skillCategories.map((cat, idx) => {
             const Icon = cat.icon
             return (
-              <div
-                key={cat.title}
-                className={`relative p-5 sm:p-6 rounded-xl border border-gray-700/60 bg-gray-800/40 backdrop-blur-sm transition-all duration-700 ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                }`}
-                style={{ transitionDelay: `${idx * 70}ms` }}
+              <motion.div
+                key={idx}
+                whileHover={{ y: -6, borderColor: "rgba(59, 130, 246, 0.4)" }}
+                transition={{ duration: 0.25 }}
+                className="rounded-2xl bg-[#0b0f19] border border-white/[0.08] p-6 transition-all flex flex-col justify-between shadow-xl group"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`p-2 rounded-lg bg-gradient-to-r ${cat.color}`}>
-                    <Icon className="w-5 h-5 text-white" />
+                <div>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="p-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-blue-400 group-hover:bg-blue-500/20 group-hover:border-blue-500/40 transition-colors">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+                      {cat.title}
+                    </h3>
                   </div>
-                  <h3 className="text-lg font-semibold text-white">{cat.title}</h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {cat.skills.map((skill, sIdx) => (
+                      <span
+                        key={sIdx}
+                        className="text-xs px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.06] text-slate-300 font-mono group-hover:border-white/[0.12] transition-colors"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {cat.items.map((item) => (
-                    <span
-                      key={item}
-                      className="px-3 py-1.5 rounded-full text-xs sm:text-sm bg-gray-800/60 border border-gray-700 text-gray-300"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              </motion.div>
             )
           })}
         </div>
 
-        {/* Sports Programming */}
-        <div
-          className={`mt-10 sm:mt-12 transition-all duration-700 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          }`}
-        >
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center justify-center gap-2">
-            <Trophy className="w-5 h-5 text-yellow-400" />
-            Sports Programming
-          </h3>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {sportsProgramming.map((p, i) => (
-              <div
-                key={p.platform}
-                className="p-4 rounded-lg border border-gray-700/60 bg-gray-800/40 text-center"
-                style={{ transitionDelay: `${i * 70}ms` }}
-              >
-                <div className="text-gray-300 text-sm">{p.platform}</div>
-                <div className="text-white font-semibold">{p.handle}</div>
-                <div className="text-purple-300 text-sm mt-1">{p.rating}</div>
-                <div className="text-gray-400 text-xs mt-1">Problems Solved: {p.solved}</div>
+        {/* Competitive Programming Cards */}
+        <div className="rounded-2xl bg-[#0c101b] border border-white/[0.08] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/5 rounded-bl-full pointer-events-none blur-2xl" />
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/[0.06]">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                <Trophy className="w-5 h-5" />
               </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Competitive Programming Track Record</h3>
+                <p className="text-xs text-slate-400 font-mono">750+ algorithmic problems solved across platforms</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-6">
+            {competitiveProgramming.map((cp, idx) => (
+              <a
+                key={idx}
+                href={cp.profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group p-5 rounded-xl bg-slate-900/60 border border-white/[0.06] hover:border-blue-500/40 hover:bg-slate-900/90 transition-all flex items-center justify-between cursor-pointer"
+              >
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-base font-bold text-white group-hover:text-blue-400 transition-colors">
+                      {cp.platform}
+                    </span>
+                    <span className={`text-[11px] font-mono px-2 py-0.5 rounded border ${cp.badgeColor}`}>
+                      {cp.tier}
+                    </span>
+                  </div>
+                  <p className="text-xs font-mono text-slate-400">Handle: {cp.handle}</p>
+                  <div className="flex items-center gap-4 mt-3 text-xs font-mono text-slate-300">
+                    <span>Max Rating: <strong className="text-white">{cp.maxRating}</strong></span>
+                    <span>Solved: <strong className="text-white">{cp.solved}</strong></span>
+                  </div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-white/[0.04] text-slate-400 group-hover:text-white group-hover:bg-blue-600 transition-colors">
+                  <ExternalLink className="w-4 h-4" />
+                </div>
+              </a>
             ))}
           </div>
         </div>
-      </div>
+      </ScrollReveal>
     </section>
   )
 }
